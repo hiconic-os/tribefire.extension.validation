@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>tribefire.extension.validation</groupId>
+	<artifactId>parent</artifactId>
+	<version>1.0.1</version>
+	<packaging>pom</packaging>
+	<properties>
+		<java.version>24</java.version>
+		<V.tribefire.cortex>[3.0,3.1)</V.tribefire.cortex>
+		<V.tribefire.extension.validation>[1.0,1.1)</V.tribefire.extension.validation>
+		<V.com.braintribe.gm>[2.0,2.1)</V.com.braintribe.gm>
+	</properties>
+</project>
