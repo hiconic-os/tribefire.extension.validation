@@ -13,6 +13,7 @@
             <groupId>tribefire.extension.validation</groupId>
             <artifactId>validation-meta-data-model</artifactId>
             <version>${V.tribefire.extension.validation}</version>
+            <?tag asset?>
         </dependency>
     </dependencies>
 </project>
