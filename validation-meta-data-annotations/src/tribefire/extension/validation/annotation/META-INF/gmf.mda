@@ -1,0 +1,2 @@
+tribefire.extension.validation.annotation.RequestValidated,tribefire.extension.validation.model.meta.RequestValidated
+tribefire.extension.validation.annotation.RequestUnvalidated,tribefire.extension.validation.model.meta.RequestUnvalidated
