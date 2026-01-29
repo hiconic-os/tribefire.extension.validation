@@ -1,4 +1,4 @@
-package tribefire.extension.validation.deployment.model;
+package tribefire.extension.validation.model.deployment;
 
 import com.braintribe.model.extensiondeployment.ServiceAroundProcessor;
 import com.braintribe.model.generic.reflection.EntityType;
