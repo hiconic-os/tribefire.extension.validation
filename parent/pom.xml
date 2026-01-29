@@ -14,6 +14,8 @@
 		<V.tribefire.extension.validation>[1.0,1.1)</V.tribefire.extension.validation>
 		<V.com.braintribe.gm>[2.0,2.1)</V.com.braintribe.gm>
 		<V.com.braintribe.common>[2.0,2.1)</V.com.braintribe.common>
+		<V.com.braintribe.wire>[2.0,2.1)</V.com.braintribe.wire>
+		<V.hiconic.platform.reflex>[1.0,1.1)</V.hiconic.platform.reflex>
 	</properties>
 	<licenses>
         <license>

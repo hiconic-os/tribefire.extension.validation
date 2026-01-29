@@ -8,7 +8,7 @@
     <artifactId>validation-module-api</artifactId>
     <version>1.0.1</version>
     <properties/>
-	<licenses>
+    <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
@@ -17,16 +17,15 @@
         </license>
     </licenses>
     <dependencies>
-        <!-- no dependencies -->
         <dependency>
-            <groupId>com.braintribe.gm</groupId>
-            <artifactId>meta-model-api</artifactId>
-            <version>${V.com.braintribe.gm}</version>
+            <groupId>tribefire.extension.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${V.tribefire.extension.validation}</version>
         </dependency>
         <dependency>
-            <groupId>com.braintribe.gm</groupId>
-            <artifactId>gm-traversing-api</artifactId>
-            <version>${V.com.braintribe.gm}</version>
+            <groupId>com.braintribe.wire</groupId>
+            <artifactId>wire-api</artifactId>
+            <version>${V.com.braintribe.wire}</version>
         </dependency>
     </dependencies>
 </project>

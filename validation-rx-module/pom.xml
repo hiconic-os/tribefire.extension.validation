@@ -5,10 +5,10 @@
         <artifactId>parent</artifactId>
         <version>[1.0,1.1)</version>
     </parent>
-    <artifactId>validation-processing</artifactId>
+    <artifactId>validation-rx-module</artifactId>
     <version>1.0.1</version>
     <properties/>
-	<licenses>
+ 	<licenses>
         <license>
             <name>Apache License, Version 2.0</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0</url>
@@ -17,36 +17,24 @@
         </license>
     </licenses>
     <dependencies>
-        <!-- no dependencies -->
+        <dependency>
+            <groupId>hiconic.platform.reflex</groupId>
+            <artifactId>reflex-module-api</artifactId>
+            <version>${V.hiconic.platform.reflex}</version>
+        </dependency>
         <dependency>
             <groupId>tribefire.extension.validation</groupId>
-            <artifactId>validation-api</artifactId>
+            <artifactId>validation-rx-module-api</artifactId>
             <version>${V.tribefire.extension.validation}</version>
         </dependency>
         <dependency>
             <groupId>tribefire.extension.validation</groupId>
-            <artifactId>validation-reason-model</artifactId>
+            <artifactId>validation-processing</artifactId>
             <version>${V.tribefire.extension.validation}</version>
-            <?tag asset ?>
-        </dependency>
-        <dependency>
-            <groupId>com.braintribe.common</groupId>
-            <artifactId>platform-api</artifactId>
-            <version>${V.com.braintribe.common}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.braintribe.gm</groupId>
-            <artifactId>basic-gm-traversing</artifactId>
-            <version>${V.com.braintribe.gm}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.braintribe.gm</groupId>
-            <artifactId>service-api</artifactId>
-            <version>${V.com.braintribe.gm}</version>
         </dependency>
         <dependency>
             <groupId>tribefire.extension.validation</groupId>
-            <artifactId>validation-meta-data-model</artifactId>
+            <artifactId>validation-configured-api-model</artifactId>
             <version>${V.tribefire.extension.validation}</version>
             <?tag asset ?>
         </dependency>

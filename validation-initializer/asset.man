@@ -1,2 +1,0 @@
-$nature = !com.braintribe.model.asset.natures.PrimingModule()
-.accessIds = ('cortex')
