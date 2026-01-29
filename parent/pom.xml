@@ -14,4 +14,12 @@
 		<V.tribefire.extension.validation>[1.0,1.1)</V.tribefire.extension.validation>
 		<V.com.braintribe.gm>[2.0,2.1)</V.com.braintribe.gm>
 	</properties>
+	<licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
 </project>
