@@ -13,6 +13,7 @@
 		<V.tribefire.cortex>[3.0,3.1)</V.tribefire.cortex>
 		<V.tribefire.extension.validation>[1.0,1.1)</V.tribefire.extension.validation>
 		<V.com.braintribe.gm>[2.0,2.1)</V.com.braintribe.gm>
+		<V.com.braintribe.common>[2.0,2.1)</V.com.braintribe.common>
 	</properties>
 	<licenses>
         <license>

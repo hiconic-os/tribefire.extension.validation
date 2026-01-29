@@ -1,0 +1,51 @@
+package tribefire.extension.validation.processing;
+
+import java.util.function.Function;
+
+import com.braintribe.cfg.Required;
+import com.braintribe.gm.model.reason.Maybe;
+import com.braintribe.gm.model.reason.Reason;
+import com.braintribe.model.processing.meta.cmd.CmdResolver;
+import com.braintribe.model.processing.service.api.ReasonedServicePreProcessor;
+import com.braintribe.model.processing.service.api.ServiceRequestContext;
+import com.braintribe.model.service.api.ServiceRequest;
+
+import tribefire.extension.validation.api.ValidationExperts;
+import tribefire.extension.validation.model.meta.RequestValidated;
+
+public class ValidationPreProcessor implements ReasonedServicePreProcessor<ServiceRequest> {
+	private Function<String, CmdResolver> mdResolverLookup;
+	private ValidationExperts validationExperts;
+	
+	@Required
+	public void setMdResolverLookup(Function<String, CmdResolver> mdResolverLookup) {
+		this.mdResolverLookup = mdResolverLookup;
+	}
+	
+	@Required
+	public void setValidationExperts(ValidationExperts validationExperts) {
+		this.validationExperts = validationExperts;
+	}
+	
+	@Override
+	public Maybe<? extends ServiceRequest> processReasoned(ServiceRequestContext requestContext,
+			ServiceRequest request) {
+		
+		String domainId = requestContext.getDomainId();
+		
+		CmdResolver mdResolver = mdResolverLookup.apply(domainId);
+		
+		boolean validated = mdResolver.getMetaData().entity(request).is(RequestValidated.T);
+		
+		if (!validated)
+			return Maybe.complete(request);
+		
+		Validation validation = new Validation(mdResolver, validationExperts);
+		
+		Reason violation = validation.validate(request, request.entityType());
+		
+		return violation != null? //
+				Maybe.empty(violation): //
+				Maybe.complete(request);
+	}
+}
