@@ -18,6 +18,7 @@ import tribefire.extension.validation.api.ValidatorFactory;
 public class ValidationContextImpl implements ValidationContext {
 	
 	private Map<EntityType<?>, List<Validator<?>>> validators = new IdentityHashMap<>();
+	private Map<EntityType<?>, List<ValidatorFactory<?>>> validatorFactories = new IdentityHashMap<>();
 	
 	private CmdResolver mdResolver;
 
@@ -64,14 +65,40 @@ public class ValidationContextImpl implements ValidationContext {
 		return experts;
 	}
 	
+	public List<ValidatorFactory<?>> getFactories(EntityType<?> entityType) {
+		List<ValidatorFactory<?>> experts = validatorFactories.get(entityType);
+		
+		if (experts == null) {
+			experts = determineFactories(entityType);
+			validatorFactories.put(entityType, experts);
+		}
+		
+		return experts;
+	}
+	
+	
+	private List<ValidatorFactory<?>> determineFactories(EntityType<?> entityType) {
+		List<ValidatorFactory<?>> factories = new ArrayList<>();
+
+		for (EntityType<?> superType : entityType.getSuperTypes()) {
+			factories.addAll(getFactories(superType));
+		}
+
+		for (ValidatorFactory<?> validatorFactory : validationExperts.getValidatorFactory(entityType)) {
+			factories.add(validatorFactory);
+		}
+		
+		return factories;
+	}
+	
 	private List<Validator<?>> determineExperts(EntityType<?> entityType) {
 		List<Validator<?>> validators = new ArrayList<>();
 
 		for (EntityType<?> superType : entityType.getSuperTypes()) {
-			validators.addAll(getExperts(entityType));
+			validators.addAll(getExperts(superType));
 		}
 
-		for (ValidatorFactory<?> validatorFactory : validationExperts.getValidatorFactory(entityType)) {
+		for (ValidatorFactory<?> validatorFactory : getFactories(entityType)) {
 			validators.addAll(validatorFactory.buildValidators(this, entityType));
 		}
 		

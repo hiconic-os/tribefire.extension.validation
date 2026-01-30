@@ -25,7 +25,9 @@ import tribefire.extension.validation.api.Validator;
 import tribefire.extension.validation.api.ValidatorFactory;
 import tribefire.extension.validation.model.reason.MandatoryViolation;
 import tribefire.extension.validation.model.reason.MaxLengthViolation;
+import tribefire.extension.validation.model.reason.MaxViolation;
 import tribefire.extension.validation.model.reason.MinLengthViolation;
+import tribefire.extension.validation.model.reason.MinViolation;
 import tribefire.extension.validation.model.reason.PatternViolation;
 import tribefire.extension.validation.model.reason.PropertyConstraintViolation;
 
@@ -70,7 +72,7 @@ public class MetadataValidatorFactory implements ValidatorFactory<GenericEntity>
 		}
 		
 		if (validations.isEmpty())
-			return null;
+			return Collections.emptyList();
 		
 		return Collections.singletonList(new MetadataPropertyValidator(validations));
 	}
@@ -136,13 +138,13 @@ public class MetadataValidatorFactory implements ValidatorFactory<GenericEntity>
 				return null;
 			
 			boolean violated = exclusive?
-					limit.compareTo(propertyValue) < 0:
-					limit.compareTo(propertyValue) <= 0;
+					limit.compareTo(propertyValue) <= 0:
+					limit.compareTo(propertyValue) < 0;
 
 			if (!violated)
 				return null;
 
-			return Reasons.build(MaxLengthViolation.T).text("Property exceeds its allowed maximum value. Max: " + limit).toReason();
+			return Reasons.build(MaxViolation.T).text("Property exceeds its allowed maximum value. Max: " + limit).toReason();
 		}
 	}
 	
@@ -164,13 +166,13 @@ public class MetadataValidatorFactory implements ValidatorFactory<GenericEntity>
 				return null;
 			
 			boolean violated = exclusive?
-					limit.compareTo(propertyValue) > 0:
-					limit.compareTo(propertyValue) >= 0;
+					limit.compareTo(propertyValue) >= 0:
+					limit.compareTo(propertyValue) > 0;
 
 			if (!violated)
 				return null;
 
-			return Reasons.build(MaxLengthViolation.T).text("Property exceeds its allowed minimum value. Min: " + limit).toReason();
+			return Reasons.build(MinViolation.T).text("Property exceeds its allowed minimum value. Min: " + limit).toReason();
 		}
 	}
 

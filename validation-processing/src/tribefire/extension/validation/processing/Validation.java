@@ -15,6 +15,7 @@
 // ============================================================================
 package tribefire.extension.validation.processing;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -65,7 +66,7 @@ public class Validation {
 	private class StatefulValidation implements GmTraversingVisitor {
 		private ValidationContextImpl validationContext;
 		private InvalidArgument error;
-		private Set<GenericEntity> visited;
+		private Set<GenericEntity> visited = new HashSet<>();
 		
 		public StatefulValidation(ValidationContextImpl validationContext) {
 			super();

@@ -1,6 +1,7 @@
 package tribefire.extension.validation.processing;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -43,12 +44,12 @@ public class ConfigurableValidationExperts implements ValidationExperts, Validat
 
 	@Override
 	public List<Validator<?>> getValidators(EntityType<?> entityType) {
-		return validators.get(entityType);
+		return validators.getOrDefault(entityType, Collections.emptyList());
 	}
 
 	@Override
 	public List<ValidatorFactory<?>> getValidatorFactory(EntityType<?> entityType) {
-		return validatorFactories.get(entityType);
+		return validatorFactories.getOrDefault(entityType, Collections.emptyList());
 	}
 
 }

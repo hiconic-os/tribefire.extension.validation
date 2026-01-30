@@ -9,6 +9,7 @@ import com.braintribe.model.generic.path.api.IPropertyModelPathElement;
 import com.braintribe.model.generic.path.api.IPropertyRelatedModelPathElement;
 import com.braintribe.model.generic.path.api.ISetItemModelPathElement;
 import com.braintribe.model.generic.reflection.CollectionType;
+import com.braintribe.model.generic.reflection.EntityType;
 import com.braintribe.model.generic.reflection.EssentialCollectionTypes;
 import com.braintribe.model.generic.reflection.GenericModelType;
 import com.braintribe.model.generic.reflection.MapType;
@@ -35,7 +36,13 @@ public interface ModelPaths {
 		switch (element.getElementType()) {
 			case Root:
 			case EntryPoint:
-				builder.append(element.getType().getTypeSignature());
+				GenericModelType type = element.getType();
+				if (type.isEntity()) {
+					EntityType<?> entityType = (EntityType<?>) type;
+					builder.append(entityType.getShortName());
+				}
+				else 
+					builder.append(type.getTypeName());
 				break;
 			case ListItem:
 				builder.append('[');
