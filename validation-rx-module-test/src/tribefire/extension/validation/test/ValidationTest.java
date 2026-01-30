@@ -24,14 +24,15 @@ import com.braintribe.model.generic.reflection.EntityType;
 import com.braintribe.model.service.api.ServiceRequest;
 
 import hiconic.rx.test.common.AbstractRxTest;
-import tribefire.extension.validation.model.reason.EntityConstraintViolation;
+import tribefire.extension.validation.model.reason.EntityViolation;
 import tribefire.extension.validation.model.reason.MandatoryViolation;
 import tribefire.extension.validation.model.reason.MaxLengthViolation;
 import tribefire.extension.validation.model.reason.MaxViolation;
 import tribefire.extension.validation.model.reason.MinLengthViolation;
 import tribefire.extension.validation.model.reason.MinViolation;
 import tribefire.extension.validation.model.reason.PatternViolation;
-import tribefire.extension.validation.model.reason.PropertyConstraintViolation;
+import tribefire.extension.validation.model.reason.PropertyViolation;
+import tribefire.extension.validation.model.reason.ValueViolation;
 import tribefire.extension.validation.test.model.ValidateMe;
 import tribefire.extension.validation.test.model.Validated;
 import tribefire.extension.validation.test.model.Validated1;
@@ -41,6 +42,7 @@ public class ValidationTest extends AbstractRxTest {
 
 	@BeforeClass
 	public static void onBeforeClass() {
+		// empty
 	}
 
 	@Test
@@ -230,6 +232,37 @@ public class ValidationTest extends AbstractRxTest {
 				);
 	}
 	
+	@Test
+	public void testValidated1NameAndNumberMatch() throws Exception {
+		ValidateMe validateMe = ValidateMe.T.create();
+		
+		Validated1 payload = buildValidValidated(Validated1.T);
+		
+		payload.setName("Zirkel");
+		payload.setNumber3(42);
+		
+		validateMe.setPayload(payload);
+		
+		checkViolations(validateMe);
+	}
+	
+	@Test
+	public void testValidated1NameAndNumberMismatch() throws Exception {
+		ValidateMe validateMe = ValidateMe.T.create();
+		
+		Validated1 payload = buildValidValidated(Validated1.T);
+		
+		payload.setName("Zirkel");
+		payload.setNumber3(1);
+		
+		validateMe.setPayload(payload);
+		
+		checkViolations(validateMe,
+				new ViolationExpectation(new ViolationPath(ValidateMe.T, ValidateMe.payload), 
+						Validated1.T, Validated1.number3, ValueViolation.T)
+				);
+	}
+	
 	private record ViolationPath(EntityType<?> rootType, String... path) {
 		public String asString() {
 			StringBuilder builder = new StringBuilder();
@@ -264,12 +297,12 @@ public class ValidationTest extends AbstractRxTest {
 		InvalidArgument invalidArgument = maybe.whyUnsatisfied();
 		
 		for (ViolationExpectation expectation: expectations) {
-			EntityConstraintViolation ecv = findEntityConstraintViolation(invalidArgument, expectation.failedEntityType(), expectation.path());
+			EntityViolation ecv = findEntityConstraintViolation(invalidArgument, expectation.failedEntityType(), expectation.path());
 			
 			if (ecv == null)
 				Assertions.fail("Missing expected entity constraint violation for: " + expectation.toString());
 			
-			PropertyConstraintViolation pcv = findPropertyConstrainViolation(ecv, expectation.property());
+			PropertyViolation pcv = findPropertyConstrainViolation(ecv, expectation.property());
 			
 			if (ecv == null)
 				Assertions.fail("Missing expected property constraint violation for: " + expectation.toString());
@@ -281,9 +314,9 @@ public class ValidationTest extends AbstractRxTest {
 		}
 	}
 	
-	private EntityConstraintViolation findEntityConstraintViolation(Reason reason, EntityType<?> failedEntityType, ViolationPath path) {
+	private EntityViolation findEntityConstraintViolation(Reason reason, EntityType<?> failedEntityType, ViolationPath path) {
 		for (Reason cause: reason.getReasons()) {
-			if (!(cause instanceof EntityConstraintViolation violation))
+			if (!(cause instanceof EntityViolation violation))
 				continue;
 			
 			if (!failedEntityType.getTypeSignature().equals(violation.getTypeSignature()))
@@ -298,9 +331,9 @@ public class ValidationTest extends AbstractRxTest {
 		return null;
 	}
 	
-	private PropertyConstraintViolation findPropertyConstrainViolation(Reason reason, String property) {
+	private PropertyViolation findPropertyConstrainViolation(Reason reason, String property) {
 		for (Reason cause: reason.getReasons()) {
-			if (!(cause instanceof PropertyConstraintViolation violation))
+			if (!(cause instanceof PropertyViolation violation))
 				continue;
 			
 			if (!property.equals(violation.getProperty()))

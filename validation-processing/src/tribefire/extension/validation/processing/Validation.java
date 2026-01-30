@@ -35,7 +35,7 @@ import com.braintribe.model.processing.traversing.engine.GMT;
 
 import tribefire.extension.validation.api.ValidationExperts;
 import tribefire.extension.validation.api.Validator;
-import tribefire.extension.validation.model.reason.EntityConstraintViolation;
+import tribefire.extension.validation.model.reason.EntityViolation;
 
 /**
  * Validates an entity and its properties transitively by traversing it with the {@link GMT} api. What exactly is
@@ -94,7 +94,7 @@ public class Validation {
 				GenericEntity value = pathElement.getValue();
 	
 				if (value != null && visited.add(value)) {
-					EntityConstraintViolation entityViolation = null;
+					EntityViolation entityViolation = null;
 					List<Validator<?>> experts = validationContext.getExperts(pathElementType);
 					
 					for (Validator<?> expert: experts) {
@@ -106,7 +106,7 @@ public class Validation {
 						
 						if (entityViolation == null) {
 							String typeSignature = pathElementType.getTypeSignature();
-							entityViolation = Reasons.build(EntityConstraintViolation.T) //
+							entityViolation = Reasons.build(EntityViolation.T) //
 									.text("Entity constraint violation of " + typeSignature) //
 									.toReason();
 							

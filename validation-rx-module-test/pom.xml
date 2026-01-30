@@ -55,5 +55,10 @@ limitations under the License.
             <artifactId>validation-processing</artifactId>
             <version>${V.tribefire.extension.validation}</version>
         </dependency>
+        <dependency>
+            <groupId>tribefire.extension.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>${V.tribefire.extension.validation}</version>
+        </dependency>
     </dependencies>
 </project>

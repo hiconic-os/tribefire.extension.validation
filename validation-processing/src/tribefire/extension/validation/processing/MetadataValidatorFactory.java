@@ -29,7 +29,7 @@ import tribefire.extension.validation.model.reason.MaxViolation;
 import tribefire.extension.validation.model.reason.MinLengthViolation;
 import tribefire.extension.validation.model.reason.MinViolation;
 import tribefire.extension.validation.model.reason.PatternViolation;
-import tribefire.extension.validation.model.reason.PropertyConstraintViolation;
+import tribefire.extension.validation.model.reason.PropertyViolation;
 
 public class MetadataValidatorFactory implements ValidatorFactory<GenericEntity> {
 	@Override
@@ -199,7 +199,7 @@ public class MetadataValidatorFactory implements ValidatorFactory<GenericEntity>
 	
 	private record MetadataPropertyValidator(List<PropertyValidation> validations) implements Validator<GenericEntity> {
 		public Reason validate(ValidationContext context, GenericEntity entity) {
-			PropertyConstraintViolation propertyConstraintViolation = null;
+			PropertyViolation propertyConstraintViolation = null;
 			
 			for (var validation: validations) {
 				PropertyValidator<GenericEntity> validator = validation.propertyValidator();
@@ -211,9 +211,9 @@ public class MetadataValidatorFactory implements ValidatorFactory<GenericEntity>
 					continue;
 				
 				if (propertyConstraintViolation == null)
-					propertyConstraintViolation = Reasons.build(PropertyConstraintViolation.T) //
+					propertyConstraintViolation = Reasons.build(PropertyViolation.T) //
 					.text("Property " +  property.getName() + " has violated constraints") //
-					.assign(PropertyConstraintViolation::setProperty, property.getName()).toReason();
+					.assign(PropertyViolation::setProperty, property.getName()).toReason();
 				
 				propertyConstraintViolation.getReasons().add(reason);
 			}

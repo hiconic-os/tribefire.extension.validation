@@ -17,6 +17,7 @@ public interface Validated extends GenericEntity {
 	String dependency = "dependency";
 	String number1 = "number1";
 	String number2 = "number2";
+	String number3 = "number3";
 	
 	@MaxLength(10)
 	@MinLength(3)
@@ -36,5 +37,8 @@ public interface Validated extends GenericEntity {
 	@Max(value = "10", exclusive = true)
 	int getNumber2();
 	void setNumber2(int number2);
+	
+	int getNumber3();
+	void setNumber3(int number3);
 
 }
