@@ -26,7 +26,7 @@ public class ValidationRxModuleSpace implements RxModuleContract, ValidationModu
 	@Override
 	public void configureModels(ModelConfigurations configurations) {
 		ModelConfiguration configuration = configurations.byName(_ValidationConfiguredApiModel_.name);
-		configuration.bindInterceptor("service-auth").forType(ServiceRequest.T).bind(this::validationPreProcessor);
+		configuration.bindInterceptor("validation").forType(ServiceRequest.T).bind(this::validationPreProcessor);
 	}
 	
 	@Override
