@@ -5,6 +5,7 @@ import java.util.function.Function;
 import com.braintribe.cfg.Required;
 import com.braintribe.gm.model.reason.Maybe;
 import com.braintribe.gm.model.reason.Reason;
+import com.braintribe.logging.Logger;
 import com.braintribe.model.processing.meta.cmd.CmdResolver;
 import com.braintribe.model.processing.service.api.ReasonedServicePreProcessor;
 import com.braintribe.model.processing.service.api.ServiceRequestContext;
@@ -14,6 +15,7 @@ import tribefire.extension.validation.api.ValidationExperts;
 import tribefire.extension.validation.model.meta.RequestValidated;
 
 public class ValidationPreProcessor implements ReasonedServicePreProcessor<ServiceRequest> {
+	private static Logger logger = Logger.getLogger(ValidationPreProcessor.class);
 	private Function<String, CmdResolver> mdResolverLookup;
 	private ValidationExperts validationExperts;
 	
@@ -40,12 +42,18 @@ public class ValidationPreProcessor implements ReasonedServicePreProcessor<Servi
 		if (!validated)
 			return Maybe.complete(request);
 		
+		logger.debug("Validating request of type " + request.entityType().getTypeSignature());
+		
 		Validation validation = new Validation(mdResolver, validationExperts);
 		
 		Reason violation = validation.validate(request, request.entityType());
 		
-		return violation != null? //
-				Maybe.empty(violation): //
-				Maybe.complete(request);
+		if (violation == null)
+			return Maybe.complete(request);
+		
+
+		logger.info("Invalidated request of type " + request.entityType().getTypeSignature() + ": " + violation.stringify());
+		
+		return violation.asMaybe();
 	}
 }

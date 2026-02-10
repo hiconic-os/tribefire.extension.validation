@@ -1,8 +1,8 @@
 package tribefire.extension.validation.processing;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.braintribe.gm.model.reason.Reason;
 import com.braintribe.gm.model.reason.Reasons;
@@ -20,6 +20,7 @@ import com.braintribe.model.processing.meta.cmd.builders.EntityMdResolver;
 import com.braintribe.model.processing.meta.cmd.builders.PropertyMdResolver;
 
 import tribefire.extension.validation.api.PropertyValidator;
+import tribefire.extension.validation.api.UmbrellaReasoning;
 import tribefire.extension.validation.api.ValidationContext;
 import tribefire.extension.validation.api.Validator;
 import tribefire.extension.validation.api.ValidatorFactory;
@@ -37,86 +38,87 @@ public class MetadataValidatorFactory implements ValidatorFactory<GenericEntity>
 		CmdResolver mdResolver = context.mdResolver();
 		EntityMdResolver entityMdResolver = mdResolver.getMetaData().entityType(entityType);
 		
-		List<PropertyValidation> validations = new ArrayList<>();
+		List<Validator<GenericEntity>> validators = new ArrayList<>();
 		
 		for (Property property : entityType.getDeclaredProperties()) {
+			List<PropertyValidator<GenericEntity>> propertyValidators = new ArrayList<>();
+
 			PropertyMdResolver propertyMdResolver = entityMdResolver.property(property);
 			
 			if (propertyMdResolver.is(Mandatory.T))
-				validations.add(new PropertyValidation(property, this::validateMandatory));
+				propertyValidators.add(this::validateMandatory);
 			
 			Pattern pattern = propertyMdResolver.meta(Pattern.T).exclusive();
 			
 			if (pattern != null)
-				validations.add(new PropertyValidation(property, new PatternValidator(pattern.getExpression())));
+				propertyValidators.add(new PatternValidator(pattern.getExpression()));
 			
 			MaxLength maxLength = propertyMdResolver.meta(MaxLength.T).exclusive();
 			
 			if (maxLength != null)
-				validations.add(new PropertyValidation(property, new MaxLenValidator(maxLength.getLength())));
+				propertyValidators.add(new MaxLenValidator(maxLength.getLength()));
 			
 			MinLength minLength = propertyMdResolver.meta(MinLength.T).exclusive();
 			
 			if (minLength != null)
-				validations.add(new PropertyValidation(property, new MinLenValidator(minLength.getLength())));
+				propertyValidators.add(new MinLenValidator(minLength.getLength()));
 			
 			Max max = propertyMdResolver.meta(Max.T).exclusive();
 			
 			if (max != null && max.getLimit() instanceof Number)
-				validations.add(new PropertyValidation(property, new MaxValidator((Number)max.getLimit(), max.getExclusive())));
+				propertyValidators.add(new MaxValidator((Number)max.getLimit(), max.getExclusive()));
 			
 			Min min = propertyMdResolver.meta(Min.T).exclusive();
 
 			if (min != null && min.getLimit() instanceof Number)
-				validations.add(new PropertyValidation(property, new MinValidator((Number)min.getLimit(), min.getExclusive())));
+				propertyValidators.add(new MinValidator((Number)min.getLimit(), min.getExclusive()));
+			
+			validators.add(new MetadataPropertyValidator(property, propertyValidators));
 		}
 		
-		if (validations.isEmpty())
-			return Collections.emptyList();
-		
-		return Collections.singletonList(new MetadataPropertyValidator(validations));
+		return validators;
 	}
 		
-	private Reason validateMandatory(ValidationContext context, GenericEntity entity, Property property, Object propertyValue) {
+	private void validateMandatory(ValidationContext context, GenericEntity entity, Property property, Object propertyValue, Consumer<Reason> invalidations) {
 		if (propertyValue != null)
-			return null;
+			return;
 		
-		return Reasons.build(MandatoryViolation.T).text("Property value must not be null").toReason();
+		invalidations.accept(Reasons.build(MandatoryViolation.T).text("Property value must not be null").toReason());
 	}
 	
 	private record MaxLenValidator(long len) implements PropertyValidator<GenericEntity> {
 		@Override
-		public Reason validate(ValidationContext context, GenericEntity entity, Property property, Object propertyValue) {
+		public void validate(ValidationContext context, GenericEntity entity, Property property, Object propertyValue, Consumer<Reason> invalidations) {
 			if (propertyValue instanceof String) {
 				String propertyStringValue = (String) propertyValue;
 
 				int length = propertyStringValue.length();
 				if (len < length) 
-					return Reasons.build(MaxLengthViolation.T) //
+					invalidations.accept(Reasons.build(MaxLengthViolation.T) //
 							.text("String has " + length + " is longer than its allowed maximum length: " + len) //
-							.toReason();
+							.toReason());
 				
 			}
 			
-			return null;
+			return;
 		}
 	}
 	
 	private record MinLenValidator(long len) implements PropertyValidator<GenericEntity> {
 		@Override
-		public Reason validate(ValidationContext context, GenericEntity entity, Property property, Object propertyValue) {
+		public void validate(ValidationContext context, GenericEntity entity, Property property, Object propertyValue, Consumer<Reason> invalidations) {
 			if (propertyValue instanceof String) {
 				String propertyStringValue = (String) propertyValue;
 
 				int length = propertyStringValue.length();
 
 				if (len > length)
-					return Reasons.build(MinLengthViolation.T) //
+					invalidations.accept(Reasons.build(MinLengthViolation.T) //
 							.text("String has " + length + " chars and is shorter than its allowed minimum length: " + len) //
-							.toReason();
+							.toReason());
 			}
 			
-			return null;
+			return;
 		}
 	}
 	
@@ -130,21 +132,21 @@ public class MetadataValidatorFactory implements ValidatorFactory<GenericEntity>
 		}
 		
 		@Override
-		public Reason validate(ValidationContext context, GenericEntity entity, Property property, Object propertyValue) {
+		public void validate(ValidationContext context, GenericEntity entity, Property property, Object propertyValue, Consumer<Reason> invalidations) {
 			if (propertyValue == null)
-				return null;
+				return;
 			
 			if (propertyValue.getClass() != limit.getClass())
-				return null;
+				return;
 			
 			boolean violated = exclusive?
 					limit.compareTo(propertyValue) <= 0:
 					limit.compareTo(propertyValue) < 0;
 
 			if (!violated)
-				return null;
+				return;
 
-			return Reasons.build(MaxViolation.T).text("Property exceeds its allowed maximum value. Max: " + limit).toReason();
+			invalidations.accept(Reasons.build(MaxViolation.T).text("Property exceeds its allowed maximum value. Max: " + limit).toReason());
 		}
 	}
 	
@@ -158,21 +160,21 @@ public class MetadataValidatorFactory implements ValidatorFactory<GenericEntity>
 		}
 		
 		@Override
-		public Reason validate(ValidationContext context, GenericEntity entity, Property property, Object propertyValue) {
+		public void validate(ValidationContext context, GenericEntity entity, Property property, Object propertyValue, Consumer<Reason> invalidations) {
 			if (propertyValue == null)
-				return null;
+				return;
 			
 			if (propertyValue.getClass() != limit.getClass())
-				return null;
+				return;
 			
 			boolean violated = exclusive?
 					limit.compareTo(propertyValue) >= 0:
 					limit.compareTo(propertyValue) > 0;
 
 			if (!violated)
-				return null;
+				return;
 
-			return Reasons.build(MinViolation.T).text("Property exceeds its allowed minimum value. Min: " + limit).toReason();
+			invalidations.accept(Reasons.build(MinViolation.T).text("Property exceeds its allowed minimum value. Min: " + limit).toReason());
 		}
 	}
 
@@ -184,41 +186,29 @@ public class MetadataValidatorFactory implements ValidatorFactory<GenericEntity>
 		}
 		
 		@Override
-		public Reason validate(ValidationContext context, GenericEntity entity, Property property, Object value) {
+		public void validate(ValidationContext context, GenericEntity entity, Property property, Object value, Consumer<Reason> invalidations) {
 			if (value == null || pattern.matcher(value.toString()).matches())
-				return null;
+				return;
 			
-			return Reasons.build(PatternViolation.T).text("Value must comply the regex pattern: " + pattern.pattern()).toReason();
+			invalidations.accept(Reasons.build(PatternViolation.T).text("Value must comply the regex pattern: " + pattern.pattern()).toReason());
 		}
 	}
 	
 	
-	private record PropertyValidation(Property property, PropertyValidator<GenericEntity> propertyValidator) {
+	private record MetadataPropertyValidator(Property property, List<PropertyValidator<GenericEntity>> validators) implements Validator<GenericEntity> {
 		
-	}
-	
-	private record MetadataPropertyValidator(List<PropertyValidation> validations) implements Validator<GenericEntity> {
-		public Reason validate(ValidationContext context, GenericEntity entity) {
-			PropertyViolation propertyConstraintViolation = null;
+		public void validate(ValidationContext context, GenericEntity entity, Consumer<Reason> invalidations) {
+			var umbrellaReasoning = UmbrellaReasoning.create(PropertyViolation.T, r -> {
+				r.setText("Property " +  property.getName() + " has violated constraints");
+				r.setProperty(property.getName());
+			});
 			
-			for (var validation: validations) {
-				PropertyValidator<GenericEntity> validator = validation.propertyValidator();
-				Property property = validation.property();
+			for (var validator: validators) {
 				Object value = property.get(entity);
-				Reason reason = validator.validate(context, entity, property, value);
-				
-				if (reason == null)
-					continue;
-				
-				if (propertyConstraintViolation == null)
-					propertyConstraintViolation = Reasons.build(PropertyViolation.T) //
-					.text("Property " +  property.getName() + " has violated constraints") //
-					.assign(PropertyViolation::setProperty, property.getName()).toReason();
-				
-				propertyConstraintViolation.getReasons().add(reason);
+				validator.validate(context, entity, property, value, umbrellaReasoning);
 			}
 			
-			return propertyConstraintViolation;
+			umbrellaReasoning.forwardIfReasonable(invalidations);
 		}
 	}
 }

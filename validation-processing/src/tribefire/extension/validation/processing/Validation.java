@@ -33,6 +33,7 @@ import com.braintribe.model.processing.traversing.api.GmTraversingVisitor;
 import com.braintribe.model.processing.traversing.api.path.TraversingModelPathElement;
 import com.braintribe.model.processing.traversing.engine.GMT;
 
+import tribefire.extension.validation.api.UmbrellaReasoning;
 import tribefire.extension.validation.api.ValidationExperts;
 import tribefire.extension.validation.api.Validator;
 import tribefire.extension.validation.model.reason.EntityViolation;
@@ -94,30 +95,21 @@ public class Validation {
 				GenericEntity value = pathElement.getValue();
 	
 				if (value != null && visited.add(value)) {
-					EntityViolation entityViolation = null;
+					var umbrellaReasoning = UmbrellaReasoning.create(EntityViolation.T, r -> {
+						String typeSignature = pathElementType.getTypeSignature();
+						r.setText("Entity constraint violation of " + typeSignature);
+						r.setPath(ModelPaths.stringify(pathElement));
+						r.setTypeSignature(typeSignature);
+					});
+					
 					List<Validator<?>> experts = validationContext.getExperts(pathElementType);
 					
 					for (Validator<?> expert: experts) {
 						Validator<GenericEntity> castedExpert = (Validator<GenericEntity>)expert;
-						Reason violation = castedExpert.validate(validationContext, value);
-						
-						if (violation == null)
-							continue;
-						
-						if (entityViolation == null) {
-							String typeSignature = pathElementType.getTypeSignature();
-							entityViolation = Reasons.build(EntityViolation.T) //
-									.text("Entity constraint violation of " + typeSignature) //
-									.toReason();
-							
-							entityViolation.setPath(ModelPaths.stringify(pathElement));
-							entityViolation.setTypeSignature(typeSignature);
-							
-							addError(entityViolation);
-						}
-						
-						entityViolation.getReasons().add(violation);
+						castedExpert.validate(validationContext, value, umbrellaReasoning);
 					}
+					
+					umbrellaReasoning.forwardIfReasonable(this::addError);
 				}
 			}
 		}
