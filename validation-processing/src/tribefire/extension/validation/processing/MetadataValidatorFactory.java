@@ -34,8 +34,7 @@ import tribefire.extension.validation.model.reason.PropertyViolation;
 
 public class MetadataValidatorFactory implements ValidatorFactory<GenericEntity> {
 	@Override
-	public List<Validator<GenericEntity>> buildValidators(ValidationContext context, EntityType<?> entityType) {
-		CmdResolver mdResolver = context.mdResolver();
+	public List<Validator<GenericEntity>> buildValidators(CmdResolver mdResolver, EntityType<?> entityType) {
 		EntityMdResolver entityMdResolver = mdResolver.getMetaData().entityType(entityType);
 		
 		List<Validator<GenericEntity>> validators = new ArrayList<>();
@@ -73,7 +72,8 @@ public class MetadataValidatorFactory implements ValidatorFactory<GenericEntity>
 			if (min != null && min.getLimit() instanceof Number)
 				propertyValidators.add(new MinValidator((Number)min.getLimit(), min.getExclusive()));
 			
-			validators.add(new MetadataPropertyValidator(property, propertyValidators));
+			if (!propertyValidators.isEmpty())
+				validators.add(new MetadataPropertyValidator(property, propertyValidators));
 		}
 		
 		return validators;

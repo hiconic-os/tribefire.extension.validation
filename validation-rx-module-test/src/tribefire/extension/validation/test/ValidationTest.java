@@ -13,6 +13,10 @@
 // ============================================================================
 package tribefire.extension.validation.test;
 
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import org.assertj.core.api.Assertions;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,6 +25,7 @@ import com.braintribe.gm.model.reason.Maybe;
 import com.braintribe.gm.model.reason.Reason;
 import com.braintribe.gm.model.reason.essential.InvalidArgument;
 import com.braintribe.model.generic.reflection.EntityType;
+import com.braintribe.model.meta.GmEntityType;
 import com.braintribe.model.service.api.ServiceRequest;
 
 import hiconic.rx.test.common.AbstractRxTest;
@@ -33,6 +38,7 @@ import tribefire.extension.validation.model.reason.MinViolation;
 import tribefire.extension.validation.model.reason.PatternViolation;
 import tribefire.extension.validation.model.reason.PropertyViolation;
 import tribefire.extension.validation.model.reason.ValueViolation;
+import tribefire.extension.validation.processing.EntitySuperTypes;
 import tribefire.extension.validation.test.model.ValidateMe;
 import tribefire.extension.validation.test.model.Validated;
 import tribefire.extension.validation.test.model.Validated1;
@@ -43,6 +49,22 @@ public class ValidationTest extends AbstractRxTest {
 	@BeforeClass
 	public static void onBeforeClass() {
 		// empty
+	}
+	
+	@Test 
+	public void testSuperTypeHierarchy() {
+		Set<EntityType<?>> linearizedSuperTypes = new LinkedHashSet<>(EntitySuperTypes.getLinearizedSuperTypes(GmEntityType.T));
+		
+		for (var t: linearizedSuperTypes)
+			System.out.println(t);
+
+		System.out.println();
+		
+		Set<EntityType<?>> linearizedSuperTypesExpected = new HashSet<>();
+		for (var t: GmEntityType.T.getTransitiveSuperTypes(true, true))
+			linearizedSuperTypesExpected.add(t);
+		
+		Assertions.assertThat(linearizedSuperTypes).isEqualTo(linearizedSuperTypesExpected);
 	}
 
 	@Test
@@ -281,6 +303,7 @@ public class ValidationTest extends AbstractRxTest {
 
 	private void checkViolations(ServiceRequest request, ViolationExpectation... expectations) {
 		Maybe<Object> maybe = evaluator.eval(request).getReasoned();
+		
 		checkViolations(maybe, expectations);
 	}
 	

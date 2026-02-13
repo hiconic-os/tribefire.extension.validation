@@ -1,5 +1,7 @@
 package tribefire.extension.validation.processing;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 
 import com.braintribe.cfg.Required;
@@ -18,6 +20,7 @@ public class ValidationPreProcessor implements ReasonedServicePreProcessor<Servi
 	private static Logger logger = Logger.getLogger(ValidationPreProcessor.class);
 	private Function<String, CmdResolver> mdResolverLookup;
 	private ValidationExperts validationExperts;
+	private Map<CmdResolver, ContextualizedValidators> contextualizedValidators = new ConcurrentHashMap<>();
 	
 	@Required
 	public void setMdResolverLookup(Function<String, CmdResolver> mdResolverLookup) {
@@ -44,7 +47,7 @@ public class ValidationPreProcessor implements ReasonedServicePreProcessor<Servi
 		
 		logger.debug("Validating request of type " + request.entityType().getTypeSignature());
 		
-		Validation validation = new Validation(mdResolver, validationExperts);
+		Validation validation = new Validation(mdResolver, getValidators(mdResolver));
 		
 		Reason violation = validation.validate(request, request.entityType());
 		
@@ -55,5 +58,10 @@ public class ValidationPreProcessor implements ReasonedServicePreProcessor<Servi
 		logger.info("Invalidated request of type " + request.entityType().getTypeSignature() + ": " + violation.stringify());
 		
 		return violation.asMaybe();
+	}
+	
+	private ContextualizedValidators getValidators(CmdResolver mdResolver) {
+		return contextualizedValidators.computeIfAbsent(mdResolver, r -> new ContextualizedValidators(r, validationExperts));
+		
 	}
 }

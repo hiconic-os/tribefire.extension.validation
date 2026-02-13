@@ -1,6 +1,5 @@
 package tribefire.extension.validation.wire.space;
 
-import com.braintribe.model.generic.GenericEntity;
 import com.braintribe.model.service.api.ServiceRequest;
 import com.braintribe.wire.api.annotation.Import;
 import com.braintribe.wire.api.annotation.Managed;
@@ -37,7 +36,7 @@ public class ValidationRxModuleSpace implements RxModuleContract, ValidationModu
 	@Managed
 	private ConfigurableValidationExperts validationExperts() {
 		ConfigurableValidationExperts bean = new ConfigurableValidationExperts();
-		bean.registerValidatorFactory(GenericEntity.T, metadataValidatorFactory());
+		bean.registerValidatorFactory(metadataValidatorFactory());
 		return bean;
 	}
 	

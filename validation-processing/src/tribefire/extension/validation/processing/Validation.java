@@ -34,7 +34,6 @@ import com.braintribe.model.processing.traversing.api.path.TraversingModelPathEl
 import com.braintribe.model.processing.traversing.engine.GMT;
 
 import tribefire.extension.validation.api.UmbrellaReasoning;
-import tribefire.extension.validation.api.ValidationExperts;
 import tribefire.extension.validation.api.Validator;
 import tribefire.extension.validation.model.reason.EntityViolation;
 
@@ -45,12 +44,13 @@ import tribefire.extension.validation.model.reason.EntityViolation;
  */
 public class Validation {
 
-	private ValidationExperts validationExperts;
 	private CmdResolver cmdResolver;
+	private ContextualizedValidators validators;
 	
-	public Validation(CmdResolver cmdResolver, ValidationExperts validationExperts) {
+	public Validation(CmdResolver cmdResolver, ContextualizedValidators validators) {
 		this.cmdResolver = cmdResolver;
-		this.validationExperts = validationExperts;
+		this.validators = validators;
+		this.validators = validators;
 	}
 
 	public Reason validate(Object rootValue) {
@@ -58,7 +58,7 @@ public class Validation {
 	}
 	
 	public Reason validate(Object rootValue, GenericModelType rootType) {
-		ValidationContextImpl validationContext = new ValidationContextImpl(cmdResolver, validationExperts, rootValue, rootType);
+		ValidationContextImpl validationContext = new ValidationContextImpl(cmdResolver, validators, rootValue, rootType);
 		StatefulValidation statefulValidation = new StatefulValidation(validationContext);
 		GMT.traverse().depthFirstWalk().visitor(statefulValidation).doFor(rootValue);
 		return statefulValidation.getError();
@@ -102,7 +102,7 @@ public class Validation {
 						r.setTypeSignature(typeSignature);
 					});
 					
-					List<Validator<?>> experts = validationContext.getExperts(pathElementType);
+					List<Validator<?>> experts = validationContext.getValidators().getExperts(pathElementType);
 					
 					for (Validator<?> expert: experts) {
 						Validator<GenericEntity> castedExpert = (Validator<GenericEntity>)expert;

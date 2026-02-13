@@ -5,5 +5,5 @@ import com.braintribe.model.generic.reflection.EntityType;
 
 public interface ValidationExpertsConfigurer {
 	<E extends GenericEntity> void registerValidator(EntityType<E> entityType, Validator<E> validator);
-	<E extends GenericEntity> void registerValidatorFactory(EntityType<E> entityType, ValidatorFactory<E> validatorFactory);
+	<E extends GenericEntity> void registerValidatorFactory(ValidatorFactory<E> validatorFactory);
 }

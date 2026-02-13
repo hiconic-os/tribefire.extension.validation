@@ -4,7 +4,6 @@ package tribefire.extension.validation.wire.space;
 import com.braintribe.model.deployment.DeploymentStatus;
 import com.braintribe.model.extensiondeployment.HardwiredServicePreProcessor;
 import com.braintribe.model.extensiondeployment.meta.PreProcessWith;
-import com.braintribe.model.generic.GenericEntity;
 import com.braintribe.model.generic.reflection.Model;
 import com.braintribe.model.meta.GmMetaModel;
 import com.braintribe.model.processing.deployment.api.binding.DenotationBindingBuilder;
@@ -100,7 +99,7 @@ public class ValidationModuleSpace implements TribefireModuleContract, Validatio
 	@Managed
 	private ConfigurableValidationExperts validationExperts() {
 		ConfigurableValidationExperts bean = new ConfigurableValidationExperts();
-		bean.registerValidatorFactory(GenericEntity.T, metadataValidatorFactory());
+		bean.registerValidatorFactory(metadataValidatorFactory());
 		return bean;
 	}
 	

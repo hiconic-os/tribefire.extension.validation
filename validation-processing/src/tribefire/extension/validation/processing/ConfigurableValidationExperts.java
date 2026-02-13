@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.braintribe.model.generic.GenericEntity;
@@ -17,7 +18,7 @@ import tribefire.extension.validation.api.ValidatorFactory;
 public class ConfigurableValidationExperts implements ValidationExperts, ValidationExpertsConfigurer {
 
 	private Map<EntityType<?>,List<Validator<?>>> validators = new ConcurrentHashMap<>();
-	private Map<EntityType<?>,List<ValidatorFactory<?>>> validatorFactories = new ConcurrentHashMap<>();
+	private Set<ValidatorFactory<?>> validatorFactories = ConcurrentHashMap.newKeySet();
 	
 	@Override
 	public <E extends GenericEntity> void registerValidator(EntityType<E> entityType, Validator<E> validator) {
@@ -31,15 +32,8 @@ public class ConfigurableValidationExperts implements ValidationExperts, Validat
 	}
 
 	@Override
-	public <E extends GenericEntity> void registerValidatorFactory(EntityType<E> entityType, ValidatorFactory<E> validatorFactory) {
-		validatorFactories.compute(entityType, (_,v) -> {
-			if (v==null) 
-				v = new ArrayList<>();
-			
-			v.add(validatorFactory);
-			return v;
-		});
-		
+	public <E extends GenericEntity> void registerValidatorFactory(ValidatorFactory<E> validatorFactory) {
+		validatorFactories.add(validatorFactory);
 	}
 
 	@Override
@@ -48,8 +42,7 @@ public class ConfigurableValidationExperts implements ValidationExperts, Validat
 	}
 
 	@Override
-	public List<ValidatorFactory<?>> getValidatorFactory(EntityType<?> entityType) {
-		return validatorFactories.getOrDefault(entityType, Collections.emptyList());
+	public Iterable<ValidatorFactory<?>> getValidatorFactories() {
+		return validatorFactories;
 	}
-
 }

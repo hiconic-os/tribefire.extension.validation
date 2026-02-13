@@ -6,5 +6,5 @@ import com.braintribe.model.generic.reflection.EntityType;
 
 public interface ValidationExperts {
 	List<Validator<?>> getValidators(EntityType<?> entityType);
-	List<ValidatorFactory<?>> getValidatorFactory(EntityType<?> entityType);
+	Iterable<ValidatorFactory<?>> getValidatorFactories();
 }
