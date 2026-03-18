@@ -127,7 +127,7 @@ public class ValidationModuleSpace implements TribefireModuleContract, Validatio
 		HardwiredServicePreProcessor processor = session.findEntityByGlobalId(GLOBAL_ID_PREPROCESSOR_VALIDATION);
 		
 		PreProcessWith preProcessWith = session.create(PreProcessWith.T);
-		preProcessWith.setGlobalId("preProcessWith.service.auth");
+		preProcessWith.setGlobalId("preProcessWith.service.validation");
 		preProcessWith.setProcessor(processor);
 		
 		editor.onEntityType(AuthorizedRequest.T).addMetaData(preProcessWith);

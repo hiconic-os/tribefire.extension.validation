@@ -1,1 +1,2 @@
 $nature = !com.braintribe.model.asset.natures.TribefireModule()
+.accessIds=('cortex')
