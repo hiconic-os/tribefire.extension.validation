@@ -46,6 +46,7 @@ public class ValidationModuleSpace implements TribefireModuleContract, Validatio
 	@Override
 	public void bindWireContracts(WireContractBindingBuilder bindings) {
 		// Bind wire contracts to make them available for other modules.
+		bindings.bind(ValidationModuleContract.class, this);
 		// Note that the Contract class cannot be defined in this module, but must be in a gm-api artifact.
 	}
 
