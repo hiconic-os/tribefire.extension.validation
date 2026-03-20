@@ -3,7 +3,6 @@ package tribefire.extension.validation.openapi.processing;
 import java.util.List;
 import java.util.function.Consumer;
 
-import com.braintribe.model.generic.i18n.LocalizedString;
 import com.braintribe.model.processing.meta.cmd.builders.EntityMdResolver;
 import com.braintribe.model.processing.meta.cmd.builders.MdResolver;
 import com.braintribe.model.processing.meta.cmd.builders.ModelMdResolver;
@@ -34,11 +33,9 @@ public class ValidationOpenapiDescriptionResolver implements OpenapiDescriptionR
 		consumer.accept("<b>Validation Info:</b><br>\n");
 		consumer.accept("<ul>\n");
 		for (ValidationInfo validationInfo: validationInfos) {
-			LocalizedString text = validationInfo.getText();
-			if (text == null)
+			String value = validationInfo.getText();
+			if (value == null)
 				continue;
-			
-			String value = text.value();
 			
 			consumer.accept("<li>\n");
 			consumer.accept(DOMTools.encode(value));
