@@ -11,7 +11,7 @@ import java.lang.annotation.Target;
  * Attaches human-readable validation information.
  *
  * <p>
- * When a property, or request element is annotated with @ValidationInfo, the provided text describes the expected validation criteria in a form
+ * When a property, or request element is annotated with {@code @ValidationInfo}, the provided text describes the expected validation criteria in a form
  * intended for human understanding.
  *
  * <p>
@@ -26,12 +26,15 @@ import java.lang.annotation.Target;
  * </ul>
  *
  * <p>
+ * Localization is achieved by applying the annotation multiple times, once for each {@link #locale()}.
+ * <p>
  * The {@code globalId} attribute refers to the globalId of the related meta-data to maintain identity.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.METHOD, ElementType.FIELD, ElementType.TYPE })
 @Documented
 public @interface ValidationInfo {
-
     String globalId() default "";
+    String locale() default "default";
+	String text();
 }
