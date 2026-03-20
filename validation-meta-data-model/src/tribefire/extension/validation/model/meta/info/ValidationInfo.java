@@ -1,6 +1,5 @@
 package tribefire.extension.validation.model.meta.info;
 
-import com.braintribe.model.generic.i18n.LocalizedString;
 import com.braintribe.model.generic.reflection.EntityType;
 import com.braintribe.model.generic.reflection.EntityTypes;
 import com.braintribe.model.meta.data.UniversalMetaData;
@@ -28,7 +27,7 @@ public interface ValidationInfo extends UniversalMetaData {
 	
 	String text = "text";
 
-	void setText(LocalizedString text);
-	LocalizedString getText();
+	void setText(String text);
+	String getText();
 	
 }
