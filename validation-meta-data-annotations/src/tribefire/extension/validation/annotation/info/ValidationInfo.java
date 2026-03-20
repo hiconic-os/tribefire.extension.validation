@@ -36,5 +36,5 @@ import java.lang.annotation.Target;
 public @interface ValidationInfo {
     String globalId() default "";
     String locale() default "default";
-	String text();
+	String value();
 }
