@@ -20,14 +20,6 @@
             <version>${V.tribefire.extension.web-api}</version>
         </dependency>
         <dependency>
-            <groupId>tribefire.extension.web-api</groupId>
-            <artifactId>web-api-server-module</artifactId>
-            <version>${V.tribefire.extension.web-api}</version>
-            <classifier>asset</classifier>
-            <type>man</type>
-            <?tag asset?>
-        </dependency>
-        <dependency>
             <groupId>tribefire.extension.validation</groupId>
             <artifactId>validation-meta-data-model</artifactId>
             <version>${V.tribefire.extension.validation}</version>

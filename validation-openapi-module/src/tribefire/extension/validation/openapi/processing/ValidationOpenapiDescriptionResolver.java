@@ -29,19 +29,32 @@ public class ValidationOpenapiDescriptionResolver implements OpenapiDescriptionR
 		if (validationInfos.isEmpty())
 			return;
 		
-		consumer.accept("<p>\n");
-		consumer.accept("<b>Validation Info:</b><br>\n");
-		consumer.accept("<ul>\n");
+		consumer.accept("\n\n***");
+		consumer.accept("\n\n<b>`Validation Info`</b>");
+		
 		for (ValidationInfo validationInfo: validationInfos) {
 			String value = validationInfo.getText();
 			if (value == null)
 				continue;
 			
-			consumer.accept("<li>\n");
+			consumer.accept("\n\n<br/>");
+			consumer.accept("`");
 			consumer.accept(DOMTools.encode(value));
-			consumer.accept("</li>\n");
+			consumer.accept("`");
 		}
-		consumer.accept("</ul>\n");
+		consumer.accept("\n\n<br/>");
+		
+//		consumer.accept("<ul>\n");
+//		for (ValidationInfo validationInfo: validationInfos) {
+//			String value = validationInfo.getText();
+//			if (value == null)
+//				continue;
+//			
+//			consumer.accept("<li>\n");
+//			consumer.accept(DOMTools.encode(value));
+//			consumer.accept("</li>\n");
+//		}
+//		consumer.accept("</ul>\n");
 		consumer.accept("</p>\n");
 	}
 }
