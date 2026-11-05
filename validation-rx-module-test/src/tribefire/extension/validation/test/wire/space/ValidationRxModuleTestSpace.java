@@ -6,9 +6,9 @@ import com.braintribe.wire.api.annotation.Managed;
 
 import hiconic.rx.module.api.service.ServiceDomainConfiguration;
 import hiconic.rx.module.api.wire.RxModuleContract;
-import hiconic.rx.module.api.wire.RxPlatformConfigurator;
+import hiconic.rx.module.api.config.RxPlatformConfigurator;
 import hiconic.rx.module.api.wire.RxPlatformContract;
-import tribefire.extension.validation._ValidationConfiguredApiModel_;
+import tribefire.extension.validation.api.ValidationModelSymbols;
 import tribefire.extension.validation.api.wire.contract.ValidationModuleContract;
 import tribefire.extension.validation.test.model.ValidateMe;
 import tribefire.extension.validation.test.model.Validated1;
@@ -24,7 +24,7 @@ public class ValidationRxModuleTestSpace implements RxModuleContract {
 	
 	@Override
 	public void configureMainServiceDomain(ServiceDomainConfiguration configuration) {
-		configuration.addModel(platform.configuredModels().byName(_ValidationConfiguredApiModel_.name));
+		configuration.addModel(ValidationModelSymbols.configuredValidationApiModel);
 		configuration.bindRequest(ValidateMe.T, () -> (_,_) -> Neutral.NEUTRAL);
 	}
 	

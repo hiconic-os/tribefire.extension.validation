@@ -1,5 +1,6 @@
 package tribefire.extension.validation.wire.space;
 
+import com.braintribe.gm._ServiceApiModel_;
 import com.braintribe.model.service.api.ServiceRequest;
 import com.braintribe.wire.api.annotation.Import;
 import com.braintribe.wire.api.annotation.Managed;
@@ -9,7 +10,8 @@ import hiconic.rx.module.api.service.ModelConfigurations;
 import hiconic.rx.module.api.service.ServiceDomains;
 import hiconic.rx.module.api.wire.RxModuleContract;
 import hiconic.rx.module.api.wire.RxPlatformContract;
-import tribefire.extension.validation._ValidationConfiguredApiModel_;
+import tribefire.extension.validation._ValidationReasonModel_;
+import tribefire.extension.validation.api.ValidationModelSymbols;
 import tribefire.extension.validation.api.ValidationExpertsConfigurer;
 import tribefire.extension.validation.api.wire.contract.ValidationModuleContract;
 import tribefire.extension.validation.processing.ConfigurableValidationExperts;
@@ -24,7 +26,9 @@ public class ValidationRxModuleSpace implements RxModuleContract, ValidationModu
 
 	@Override
 	public void configureModels(ModelConfigurations configurations) {
-		ModelConfiguration configuration = configurations.byName(_ValidationConfiguredApiModel_.name);
+		ModelConfiguration configuration = configurations.bySymbol(ValidationModelSymbols.configuredValidationApiModel);
+		configuration.addModel(_ServiceApiModel_.reflection);
+		configuration.addModel(_ValidationReasonModel_.reflection);
 		configuration.bindInterceptor("validation").forType(ServiceRequest.T).bind(this::validationPreProcessor);
 	}
 	

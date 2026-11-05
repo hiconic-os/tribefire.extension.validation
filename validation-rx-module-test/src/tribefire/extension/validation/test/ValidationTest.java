@@ -20,6 +20,10 @@ import java.util.Set;
 import org.assertj.core.api.Assertions;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import tribefire.extension.validation.api.ValidationModelSymbols;
+import com.braintribe.gm._ServiceApiModel_;
+import com.braintribe.model.generic.GMF;
+import com.braintribe.model.meta.GmMetaModel;
 
 import com.braintribe.gm.model.reason.Maybe;
 import com.braintribe.gm.model.reason.Reason;
@@ -51,6 +55,18 @@ public class ValidationTest extends AbstractRxTest {
 		// empty
 	}
 	
+	/** Repeated platform boots must keep runtime overrides out of the shared reflection schema. */
+	@Test
+	public void keepsRuntimeMetadataInPlatformOwnedOverrides() {
+		GmMetaModel configured = platformContract.configuration().configuredModels().byReference(ValidationModelSymbols.configuredValidationApiModel)
+				.modelOracle().getGmMetaModel();
+		GmMetaModel skeleton = GMF.getTypeReflection().getModel(_ServiceApiModel_.name).getMetaModel();
+		Assertions.assertThat(configured).isNotSameAs(skeleton);
+		Assertions.assertThat(configured.getTypes()).isEmpty();
+		Assertions.assertThat(configured.getTypeOverrides()).isNotEmpty();
+		Assertions.assertThat(skeleton.getTypeOverrides()).isEmpty();
+	}
+
 	@Test 
 	public void testSuperTypeHierarchy() {
 		Set<EntityType<?>> linearizedSuperTypes = new LinkedHashSet<>(EntitySuperTypes.getLinearizedSuperTypes(GmEntityType.T));
